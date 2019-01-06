@@ -7,9 +7,11 @@ package io.flutter.plugins.share;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.support.v4.content.FileProvider;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.io.File;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -24,6 +26,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  */
 public class SharePlugin implements MethodChannel.MethodCallHandler {
 
+  private static final String SHARED_PROVIDER_AUTHORITY = "io.flutter.plugins.share.fileprovider";
 	private static final String CHANNEL     = "plugins.flutter.io/share";
 	public static final  String TITLE       = "title";
 	public static final  String TEXT        = "text";
@@ -79,8 +82,23 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
 			if (call.argument(IS_MULTIPLE)) {
 				ArrayList<Uri> dataList = new ArrayList<>();
 				for (int i = 0; call.hasArgument(Integer.toString(i)); i++) {
-					dataList.add(Uri.parse((String)call.argument(Integer.toString(i))));
-				}
+
+   				// Get the shared file's Uri
+           if (mRegistrar.activity() != null) {
+
+						dataList.add(
+	
+						  FileProvider.getUriForFile(mRegistrar.activity(), SHARED_PROVIDER_AUTHORITY, new File((String)call.argument(Integer.toString(i))))
+					  );
+
+					} else {
+
+						dataList.add(
+	
+						  FileProvider.getUriForFile(mRegistrar.context(), SHARED_PROVIDER_AUTHORITY, new File((String)call.argument(Integer.toString(i))))
+					  );
+					}
+        }
 				shareMultiple(dataList, (String) call.argument(TYPE), call.hasArgument(TITLE) ? (String) call.argument(TITLE) : "");
 			} else {
 				ShareType shareType = ShareType.fromMimeType((String) call.argument(TYPE));
@@ -116,7 +134,23 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
 			shareIntent.putExtra(Intent.EXTRA_SUBJECT, title);
 		}
 		if (!ShareType.TYPE_PLAIN_TEXT.equals(shareType)) {
-			shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
+
+      // Get the shared file's Uri
+      if (mRegistrar.activity() != null) {
+
+	      shareIntent.putExtra(
+	        Intent.EXTRA_STREAM, 
+	        FileProvider.getUriForFile(mRegistrar.activity(), SHARED_PROVIDER_AUTHORITY, new File(path))
+	      );
+
+      } else {
+
+	      shareIntent.putExtra(
+	        Intent.EXTRA_STREAM, 
+	        FileProvider.getUriForFile(mRegistrar.context(), SHARED_PROVIDER_AUTHORITY, new File(path))
+	      );
+      }
+
 			if (!TextUtils.isEmpty(text)) {
 				shareIntent.putExtra(Intent.EXTRA_TEXT, text);
 			}
@@ -156,5 +190,4 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
 			mRegistrar.context().startActivity(chooserIntent);
 		}
 	}
-
 }
