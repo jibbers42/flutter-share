@@ -26,7 +26,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  */
 public class SharePlugin implements MethodChannel.MethodCallHandler {
 
-  private static final String SHARED_PROVIDER_AUTHORITY = "io.flutter.plugins.share.fileprovider";
+  private static final String SHARED_PROVIDER_AUTHORITY = ".fileprovider";
 	private static final String CHANNEL     = "plugins.flutter.io/share";
 	public static final  String TITLE       = "title";
 	public static final  String TEXT        = "text";
@@ -88,14 +88,14 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
 
 						dataList.add(
 	
-						  FileProvider.getUriForFile(mRegistrar.activity(), SHARED_PROVIDER_AUTHORITY, new File((String)call.argument(Integer.toString(i))))
+						  FileProvider.getUriForFile(mRegistrar.activity(), mRegistrar.activity().getPackageName() + SHARED_PROVIDER_AUTHORITY, new File((String)call.argument(Integer.toString(i))))
 					  );
 
 					} else {
 
 						dataList.add(
 	
-						  FileProvider.getUriForFile(mRegistrar.context(), SHARED_PROVIDER_AUTHORITY, new File((String)call.argument(Integer.toString(i))))
+						  FileProvider.getUriForFile(mRegistrar.context(), mRegistrar.context().getPackageName() + SHARED_PROVIDER_AUTHORITY, new File((String)call.argument(Integer.toString(i))))
 					  );
 					}
         }
@@ -140,14 +140,14 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
 
 	      shareIntent.putExtra(
 	        Intent.EXTRA_STREAM, 
-	        FileProvider.getUriForFile(mRegistrar.activity(), SHARED_PROVIDER_AUTHORITY, new File(path))
+	        FileProvider.getUriForFile(mRegistrar.activity(), mRegistrar.activity().getPackageName() + SHARED_PROVIDER_AUTHORITY, new File(path))
 	      );
 
       } else {
 
 	      shareIntent.putExtra(
 	        Intent.EXTRA_STREAM, 
-	        FileProvider.getUriForFile(mRegistrar.context(), SHARED_PROVIDER_AUTHORITY, new File(path))
+	        FileProvider.getUriForFile(mRegistrar.context(), mRegistrar.context().getPackageName() + SHARED_PROVIDER_AUTHORITY, new File(path))
 	      );
       }
 
