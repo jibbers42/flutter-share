@@ -7,7 +7,7 @@ package io.flutter.plugins.share;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 import java.util.ArrayList;
 import java.util.Map;
